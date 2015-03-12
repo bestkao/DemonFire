@@ -6,12 +6,19 @@ endif()
 
 
 # This project is designed to be built outside the Insight source tree.
-project(HelloWorld)
+project(DemonFire)
 
 # Find ITK.
-find_package(ITK REQUIRED)
+FIND_PACKAGE(ITK REQUIRED)
+FIND_PACKAGE(VTK REQUIRED)
+FIND_PACKAGE(FLTK REQUIRED)
+FIND_PACKAGE(OpenGL REQUIRED)
 include(${ITK_USE_FILE})
+INCLUDE (${VTK_USE_FILE})
 
 add_executable(HelloWorld HelloWorld.cxx )
+ADD_EXECUTABLE(DemonGUI DemonGUI.cxx)
 
 target_link_libraries(HelloWorld ${ITK_LIBRARIES})
+
+TARGET_LINK_LIBRARIES(DemonGUI ${ITK_LIBRARIES} ${FLTK_LIBRARIES} ${OPENGL_LIBRARIES} ${VTK_LIBRARIES})

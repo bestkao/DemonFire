@@ -1,5 +1,5 @@
 # binary files
-bin/
+bin/**
 
 # Compiled Object files
 *.slo
@@ -23,3 +23,8 @@ bin/
 
 # Macs are evil
 **/.DS_Store
+
+# CMake files
+**/CMakeFiles/**/**
+CMakeCache.txt
+cmake_install.cmake

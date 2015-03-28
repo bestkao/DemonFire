@@ -1,1 +1,0 @@
-/Users/james/Dropbox/projects/621/ITK-Tutorial/Hello/CMakeFiles/HelloWorld.dir

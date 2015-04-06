@@ -1,5 +1,6 @@
 # binary files
 bin/**
+examples/*/build
 
 # Compiled Object files
 *.slo
@@ -28,3 +29,6 @@ bin/**
 **/CMakeFiles/**/**
 CMakeCache.txt
 cmake_install.cmake
+
+# itk build generated files
+ITKIOFactoryRegistration

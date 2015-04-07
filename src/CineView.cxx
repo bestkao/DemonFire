@@ -49,6 +49,10 @@
 class cineView
 {
 public:
+    cineView(vtkImageData *data){
+        cineView(data, 2);
+    }
+    
     cineView(vtkImageData *data, int axis)
     {
         this->data = data;
@@ -68,6 +72,10 @@ public:
         p[axis]=1;
         camera->SetPosition(p);
         this->renderer->ResetCamera();
+        
+        if(axis==0){
+            camera->Roll(-90);
+        }
     }
     
     vtkSmartPointer<vtkRenderer> getRenderer(){

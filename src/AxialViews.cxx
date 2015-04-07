@@ -194,7 +194,7 @@ int main(int argc, char* argv[])
     }
     
     renderWindow->Render();
-    renderWindow->SetWindowName("Multiple ViewPorts");
+    renderWindow->SetWindowName("Axial Views");
     
     
     

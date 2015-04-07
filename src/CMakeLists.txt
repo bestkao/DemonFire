@@ -19,7 +19,7 @@ INCLUDE (${VTK_USE_FILE})
 add_executable(HelloWorld HelloWorld.cxx )
 #ADD_EXECUTABLE(DemonGUI DemonGUI.cxx)
 add_executable(LoadDICOM LoadDICOM.cxx)
-add_executable(AxialViews AxialViews.cxx)
+add_executable(AxialViews AxialViews.cxx CineView.cxx)
 
 target_link_libraries(HelloWorld ${ITK_LIBRARIES})
 #TARGET_LINK_LIBRARIES(DemonGUI ${ITK_LIBRARIES} ${FLTK_LIBRARIES} ${OPENGL_LIBRARIES} ${VTK_LIBRARIES})

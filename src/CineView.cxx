@@ -8,12 +8,14 @@
 
 #include "vtkVersion.h"
 
-
 #include <vtkImageMapper.h>
 #include <vtkImageSliceMapper.h>
 #include <vtkImageSlice.h>
 #include <vtkCommand.h>
 #include <vtkCamera.h>
+
+#include <vtkTextActor.h>
+#include <vtkTextProperty.h>
 
 
 // cineView class provides a renderer/mapper that presents axial slices of a vtkImageData object
@@ -44,12 +46,12 @@ public:
         double p[3] = {0.,0.,0.};
         p[axis]=1;
         camera->SetPosition(p);
-        this->renderer->ResetCamera();
         
         // need a slight camera roll to maintain image orientation for axis 0
         if(axis==0){
             camera->Roll(-90);
         }
+        this->renderer->ResetCamera();
     }
     
     vtkSmartPointer<vtkRenderer> getRenderer(){
@@ -73,6 +75,7 @@ public:
         {
             vtkAnimation *cb = new vtkAnimation;
             cb->slice = 0;
+            cb->delta=1;
             return cb;
         }
         
@@ -81,12 +84,11 @@ public:
         {
             if (vtkCommand::TimerEvent == eventId)
             {
-                ++this->slice;
+                this->slice += delta;
             }
             
-            if(this->slice > this->max){
-                this->slice = min;
-            }
+            if(this->slice==this->min || this->slice==this->max) delta=-delta;
+            
             mapper->SetSliceNumber(this->slice);
             vtkRenderWindowInteractor *iren = vtkRenderWindowInteractor::SafeDownCast(caller);
             iren->GetRenderWindow()->Render();
@@ -99,7 +101,7 @@ public:
             this->slice = this->min;
         }
         
-        int slice, max, min;
+        int slice, max, min, delta;
         vtkImageSliceMapper* mapper;
     };
     

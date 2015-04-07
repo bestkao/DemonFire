@@ -193,13 +193,9 @@ int main(int argc, char* argv[])
         cr->addAnimationObserver(renderWindowInteractor);
     }
     
+    // Render and start interaction
     renderWindow->Render();
     renderWindow->SetWindowName("Axial Views");
-    
-    
-    
-    // Render and start interaction
-    
     renderWindowInteractor->Start();
 
    return EXIT_SUCCESS;

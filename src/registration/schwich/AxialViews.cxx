@@ -192,6 +192,17 @@ int main(int argc, char* argv[])
         ++seriesItr;
     }
     
+    // same for 2nd series
+    FileNameList::const_iterator series2Itr = seriesUID2.begin();
+    FileNameList::const_iterator series2End = seriesUID2.end();
+    while (series2Itr != series2End) {
+		std::cout << "Found series " << series2Itr->c_str() << " containing "
+		<< nameGenerator2->GetFileNames(series2Itr->c_str()).size() << " files" << std::endl;
+		++series2Itr;
+	}
+	
+	std::cout << " Found both series." << std::endl;
+    
     // for now, visualize the first series found in the input folder
     std::string seriesIdentifier = seriesUID.begin()->c_str();
     FileNameList fileNames = nameGenerator->GetFileNames( seriesIdentifier );
@@ -228,6 +239,8 @@ int main(int argc, char* argv[])
 	metric->SetFixedInterpolator(fixedInterpolator);
 	metric->SetMovingInterpolator(movingInterpolator);
 	
+	std::cout << "Created all registration components." << std::endl;
+	
 	// make the image registration aquire inputs from the outputs of the readers
 	try
     {
@@ -239,16 +252,19 @@ int main(int argc, char* argv[])
         std::cout << ex << std::endl;
         return EXIT_FAILURE;
     }
+    
+    std::cout << "Read both image series into memory." << std::endl;
+    
 	registration->SetFixedImage(reader->GetOutput());
 	registration->SetMovingImage(reader2->GetOutput());
 	
 	TransformType::Pointer movingInitialTransform = TransformType::New();
-	TransformType::ParametersType initialParameters(movingInitialTransform->GetNumberOfParameters());
+	/*TransformType::ParametersType initialParameters(movingInitialTransform->GetNumberOfParameters());
 	initialParameters[0] = 0.0; // initial offset in mm along X
 	initialParameters[1] = 0.0; // initial offset in mm along y
 	initialParameters[2] = 0.0; // initial offset in mm along z
 	
-	movingInitialTransform->SetParameters(initialParameters);
+	movingInitialTransform->SetParameters(initialParameters);*/
 	registration->SetMovingInitialTransform(movingInitialTransform);
 	
 	TransformType::Pointer identityTransform = TransformType::New();
@@ -270,6 +286,8 @@ int main(int argc, char* argv[])
 		std::cerr << err << std::endl;
 		return EXIT_FAILURE;
 	}
+	
+	std::cout << "Registration completed." << std::endl;
 	
 	/*TransformType::ConstPointer transform = registration->GetTransform();
 	TransformType::ParametersType finalParameters = transform->GetParameters();
@@ -296,6 +314,7 @@ int main(int argc, char* argv[])
 	
 	try {
 		connector->SetInput(resampler->GetOutput());
+		//connector->SetInput(registration->GetOutput());
 		connector->Update();
 		
 	} catch (itk::ExceptionObject &ex) {

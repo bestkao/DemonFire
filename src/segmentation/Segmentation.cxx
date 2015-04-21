@@ -1,8 +1,8 @@
 #include "DemonFire.h"
 
-public class Segmentation {
+class Segmentation {
 public:
-    static ImageType* doSegmentation (ImageType){
+    static ImageType* doSegmentation (ImageType* input){
         return NULL;
     }
 };

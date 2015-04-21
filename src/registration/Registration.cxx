@@ -1,8 +1,8 @@
 #include "DemonFire.h"
 
-public class Registration {
+class Registration {
 public:
-    static ImageType* doSegmentation (ImageType){
+    static ImageType* doRegistration(ImageType* fixed, ImageType* moving){
         return NULL;
     }
 };

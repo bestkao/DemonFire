@@ -52,13 +52,14 @@ const unsigned int Dimension = 3;
 typedef itk::Image<PixelType, Dimension> ImageType;
 typedef itk::ImageSeriesReader< ImageType > ReaderType;
 typedef itk::ImageToVTKImageFilter<ImageType> ConnectorType;
+typedef itk::TranslationTransform< double, Dimension > TransformType;
 typedef itk::GDCMImageIO ImageIOType;
 typedef itk::GDCMSeriesFileNames NamesGeneratorType;
 typedef std::vector< std::string > FileNameList;
 
 class Registration{
 public:
-    static ImageType* doRegistration(ImageType*, ImageType*);
+    static TransformType::ConstPointer doRegistration(ImageType*, ImageType*);
 };
 
 class Segmentation{

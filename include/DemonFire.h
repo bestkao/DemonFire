@@ -56,3 +56,12 @@ typedef itk::GDCMImageIO ImageIOType;
 typedef itk::GDCMSeriesFileNames NamesGeneratorType;
 typedef std::vector< std::string > FileNameList;
 
+class Registration{
+public:
+    static ImageType* doRegistration(ImageType*, ImageType*);
+};
+
+class Segmentation{
+public:
+    static ImageType* doSegmentation(ImageType*);
+};

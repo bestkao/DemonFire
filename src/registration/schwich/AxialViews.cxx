@@ -310,7 +310,7 @@ int main(int argc, char* argv[])
 	optimizer->SetLearningRate(4);
 	optimizer->SetMinimumStepLength(0.001);
 	optimizer->SetRelaxationFactor(0.5);
-	optimizer->SetNumberOfIterations(200);
+	optimizer->SetNumberOfIterations(4);
     
     optimizer->AddObserver( itk::IterationEvent(), CommandIterationUpdate::New() );
 	

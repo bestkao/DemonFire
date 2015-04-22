@@ -51,6 +51,8 @@
 #include "itkTranslationTransform.h"
 #include "itkMeanSquaresImageToImageMetricv4.h"
 #include "itkRegularStepGradientDescentOptimizerv4.h"
+#include <itkTranslationTransform.h>
+#include <itkShrinkImageFilter.h>
 
 #include "itkCommand.h"
 
@@ -156,6 +158,7 @@ int main(int argc, char* argv[])
 	// transform maps the fixed image space into the moving image space
 	// type of transform
 	typedef itk::TranslationTransform<double, Dimension> TransformType;
+    typedef itk::ShrinkImageFilter<ImageType, ImageType> ShrinkFilter;
 
 	// optimizer explores the parameter space of the transform in search of optimal values of the metric
 	// type of optimizer
@@ -289,28 +292,31 @@ int main(int argc, char* argv[])
     
     std::cout << "Read both image series into memory." << std::endl;
     
-	registration->SetFixedImage(reader->GetOutput());
-	registration->SetMovingImage(reader2->GetOutput());
-	
-	TransformType::Pointer movingInitialTransform = TransformType::New();
-	/*TransformType::ParametersType initialParameters(movingInitialTransform->GetNumberOfParameters());
-	initialParameters[0] = 0.0; // initial offset in mm along X
-	initialParameters[1] = 0.0; // initial offset in mm along y
-	initialParameters[2] = 0.0; // initial offset in mm along z
-	
-	movingInitialTransform->SetParameters(initialParameters);*/
-	registration->SetMovingInitialTransform(movingInitialTransform);
+    ShrinkFilter::Pointer shrink = ShrinkFilter::New();
+    shrink->SetInput(reader->GetOutput());
+    shrink->SetShrinkFactors(16);
+    ShrinkFilter::Pointer shrink2 = ShrinkFilter::New();
+    shrink2->SetInput(reader2->GetOutput());
+    shrink2->SetShrinkFactors(16);
+    
+    shrink->Update();
+    shrink2->Update();
+    std::cout << "Shrunk both images." << std::endl;
+    
+	registration->SetFixedImage(shrink->GetOutput());
+	registration->SetMovingImage(shrink2->GetOutput());
 	
 	TransformType::Pointer identityTransform = TransformType::New();
 	identityTransform->SetIdentity();
 	
+    registration->SetMovingInitialTransform(identityTransform);
 	registration->SetFixedInitialTransform(identityTransform);
 	
 	// optimizer settings
 	optimizer->SetLearningRate(4);
 	optimizer->SetMinimumStepLength(0.001);
 	optimizer->SetRelaxationFactor(0.5);
-	optimizer->SetNumberOfIterations(4);
+	optimizer->SetNumberOfIterations(200);
     
     optimizer->AddObserver( itk::IterationEvent(), CommandIterationUpdate::New() );
 	
@@ -333,7 +339,6 @@ int main(int argc, char* argv[])
 	
 	typedef itk::CompositeTransform<double, Dimension> CompositeTransformType;
 	CompositeTransformType::Pointer outputCompositeTransform = CompositeTransformType::New();
-	outputCompositeTransform->AddTransform(movingInitialTransform);
 	outputCompositeTransform->AddTransform(registration->GetModifiableTransform());
 
 	typedef itk::ResampleImageFilter<MovingImageType, FixedImageType> ResampleFilterType;
@@ -346,7 +351,7 @@ int main(int argc, char* argv[])
 	resampler->SetOutputOrigin(fixedImage->GetOrigin());
 	resampler->SetOutputSpacing(fixedImage->GetSpacing());
 	resampler->SetOutputDirection(fixedImage->GetDirection());
-	resampler->SetDefaultPixelValue(100);
+	resampler->SetDefaultPixelValue(0);
 	
 	try {
 		connector->SetInput(resampler->GetOutput());

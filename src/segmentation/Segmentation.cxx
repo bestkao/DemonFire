@@ -1,5 +1,5 @@
 #include "DemonFire.h"
 
-ImageType* Segmentation::doSegmentation (ImageType* input){
+ImageType::Pointer Segmentation::doSegmentation (ImageType::Pointer input){
     return NULL;
 }

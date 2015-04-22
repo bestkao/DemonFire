@@ -59,10 +59,10 @@ typedef std::vector< std::string > FileNameList;
 
 class Registration{
 public:
-    static TransformType::ConstPointer doRegistration(ImageType*, ImageType*);
+    static TransformType::ConstPointer doRegistration(ImageType::Pointer, ImageType::Pointer);
 };
 
 class Segmentation{
 public:
-    static ImageType* doSegmentation(ImageType*);
+    static ImageType::Pointer doSegmentation(ImageType::Pointer);
 };

@@ -1,3 +1,7 @@
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include <algorithm>
 // some standard vtk headers
 #include <vtkSmartPointer.h>
@@ -19,42 +23,45 @@
 // itk-vtk
 #include <itkImage.h>
 #include <itkImageFileReader.h>
-
 #include <itkImageToVTKImageFilter.h>
 
-#include "vtkVersion.h"
-#include "vtkImageViewer.h"
-#include "vtkImageMapper3D.h"
-#include "vtkImageActor.h"
-#include "itkRGBPixel.h"
+#include <vtkVersion.h>
+#include <vtkImageViewer.h>
+#include <vtkImageMapper3D.h>
+#include <vtkImageActor.h>
+#include <itkRGBPixel.h>
 
 #include <vtkImageMapper.h>
 #include <vtkImageSliceMapper.h>
 #include <vtkImageSlice.h>
 #include <vtkCommand.h>
 
-// reading DICOM in itk
-#include "itkGDCMImageIO.h"
-#include "itkGDCMSeriesFileNames.h"
-#include "itkImageSeriesReader.h"
-#include "itkImageFileWriter.h"
+// reading/writing DICOM in itk
+#include <itkGDCMImageIO.h>
+#include <itkGDCMSeriesFileNames.h>
+#include <itkNumericSeriesFileNames.h>
+#include <itkImageSeriesReader.h>
+#include <itkImageSeriesWriter.h>
 
 // needed for basic image registration
-#include "itkImageRegistrationMethodv4.h"
-#include "itkTranslationTransform.h"
-#include "itkMeanSquaresImageToImageMetricv4.h"
-#include "itkRegularStepGradientDescentOptimizerv4.h"
+#include <itkImageRegistrationMethodv4.h>
+#include <itkTranslationTransform.h>
+#include <itkMeanSquaresImageToImageMetricv4.h>
+#include <itkRegularStepGradientDescentOptimizerv4.h>
 
 #include "itkCommand.h"
 
 typedef unsigned short PixelType;
 const unsigned int Dimension = 3;
 typedef itk::Image<PixelType, Dimension> ImageType;
+typedef itk::Image<PixelType, Dimension-1> OutputImageType;
 typedef itk::ImageSeriesReader< ImageType > ReaderType;
+typedef itk::ImageSeriesWriter<ImageType, OutputImageType >  WriterType;
 typedef itk::ImageToVTKImageFilter<ImageType> ConnectorType;
 typedef itk::TranslationTransform< double, Dimension > TransformType;
 typedef itk::GDCMImageIO ImageIOType;
 typedef itk::GDCMSeriesFileNames NamesGeneratorType;
+typedef itk::NumericSeriesFileNames NumericNamesGeneratorType;
 typedef std::vector< std::string > FileNameList;
 
 class Registration{
@@ -65,4 +72,20 @@ public:
 class Segmentation{
 public:
     static ImageType::Pointer doSegmentation(ImageType::Pointer);
+};
+
+class ImageProcessing{
+public:
+    static ImageType::Pointer doPreProcessing(ImageType::Pointer);
+    static ImageType::Pointer smoothImage(ImageType::Pointer);
+    static ImageType::Pointer sharpenImage(ImageType::Pointer);
+    static ImageType::Pointer applyMask(ImageType::Pointer, ImageType::Pointer);
+    static ImageType::Pointer closeImage(ImageType::Pointer);
+    static ImageType::Pointer shrinkImage(int factor);
+};
+
+class Utility{
+public:
+    static ImageType::Pointer loadDICOM(char*);
+    static int saveDICOM(ImageType::Pointer, char*);
 };

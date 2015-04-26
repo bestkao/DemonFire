@@ -45,6 +45,7 @@ ImageType::Pointer Utility::loadDICOM(char* folder){
 // save DICOM image to a folder
 // returns 1 if save was successful, 0 otherwise
 int Utility::saveDICOM(ImageType::Pointer image, char* folder){
+    mkdir(folder, 0700);
     // initialize required variables
     NumericNamesGeneratorType::Pointer namesGenerator = NumericNamesGeneratorType::New();
     ImageIOType::Pointer gdcmIO = ImageIOType::New();

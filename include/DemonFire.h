@@ -73,42 +73,31 @@ typedef itk::GDCMSeriesFileNames NamesGeneratorType;
 typedef itk::NumericSeriesFileNames NumericNamesGeneratorType;
 typedef std::vector< std::string > FileNameList;
 
-class Registration{
-public:
-    static TransformType::ConstPointer doRegistration(ImageType::Pointer, ImageType::Pointer);
-};
-
-class Segmentation{
-public:
-    static ImageType::Pointer doSegmentation(ImageType::Pointer);
-};
-
-class ImageProcessing{
-public:
-    static ImageType::Pointer doPreProcessing(ImageType::Pointer);
+namespace fire {
+    // process
+    ImageType::Pointer doPreProcessing(ImageType::Pointer);
+    TransformType::ConstPointer doRegistration(ImageType::Pointer, ImageType::Pointer);
+    ImageType::Pointer doSegmentation(ImageType::Pointer);
     
-    // basic filters
-    static ImageType::Pointer doSmooth(ImageType::Pointer);
-    static void doSmooth(ImageType::Pointer*);
-    static ImageType::Pointer doSharpen(ImageType::Pointer);
-    static void doSharpen(ImageType::Pointer*);
-    static ImageType::Pointer doIntensityWindowing(ImageType::Pointer input);
-    static void doIntensityWindowing(ImageType::Pointer*);
-    static ImageType::Pointer doBinaryThresholding(ImageType::Pointer, int);
-    static void doBinaryThresholding(ImageType::Pointer*, int);
-    static ImageType::Pointer doMask(ImageType::Pointer, ImageType::Pointer);
-    static void doMask(ImageType::Pointer *input, ImageType::Pointer);
+    // basic image filters
+    ImageType::Pointer doSmooth(ImageType::Pointer);
+    void doSmooth(ImageType::Pointer*);
+    ImageType::Pointer doSharpen(ImageType::Pointer);
+    void doSharpen(ImageType::Pointer*);
+    ImageType::Pointer doIntensityWindowing(ImageType::Pointer input);
+    void doIntensityWindowing(ImageType::Pointer*);
+    ImageType::Pointer doBinaryThresholding(ImageType::Pointer, int);
+    void doBinaryThresholding(ImageType::Pointer*, int);
+    ImageType::Pointer doMask(ImageType::Pointer, ImageType::Pointer);
+    void doMask(ImageType::Pointer *input, ImageType::Pointer);
     
-    // basic operations
-    static ImageType::Pointer doClosing(ImageType::Pointer);
-    static void doClosing(ImageType::Pointer *input);
-    static ImageType::Pointer doShrink(ImageType::Pointer, int);
-    static void doShrink(ImageType::Pointer *input, int);
-};
-
-class Utility{
-public:
-    static ImageType::Pointer loadDICOM(char*);
-    static int saveDICOM(ImageType::Pointer, char*);
-    static std::vector<ImageType::Pointer> loadDICOMs(char* folder);
-};
+    // basic image operations
+    ImageType::Pointer doClosing(ImageType::Pointer);
+    void doClosing(ImageType::Pointer *input);
+    ImageType::Pointer doShrink(ImageType::Pointer, int);
+    void doShrink(ImageType::Pointer *input, int);
+    
+    ImageType::Pointer loadDICOM(char*);
+    int saveDICOM(ImageType::Pointer, char*);
+    std::vector<ImageType::Pointer> loadDICOMs(char* folder);
+}

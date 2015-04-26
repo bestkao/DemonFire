@@ -51,7 +51,7 @@
 
 #include "itkCommand.h"
 
-typedef unsigned short PixelType;
+typedef short PixelType;
 const unsigned int Dimension = 3;
 typedef itk::Image<PixelType, Dimension> ImageType;
 typedef itk::Image<PixelType, Dimension-1> OutputImageType;
@@ -88,4 +88,5 @@ class Utility{
 public:
     static ImageType::Pointer loadDICOM(char*);
     static int saveDICOM(ImageType::Pointer, char*);
+    static ImageType::Pointer* loadDICOMs(char*);
 };

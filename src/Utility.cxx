@@ -80,3 +80,45 @@ int Utility::saveDICOM(ImageType::Pointer image, char* folder){
     
     return 1;
 }
+
+// recursively search directory for DICOM series, putting them in the dicoms array
+// returns number of
+std::vector<ImageType::Pointer> Utility::loadDICOMs(char* folder){
+    // generate file names for DICOM image
+    NamesGeneratorType::Pointer nameGenerator = NamesGeneratorType::New();
+    nameGenerator->SetRecursive( true );
+    nameGenerator->SetDirectory(folder);
+    nameGenerator->SetUseSeriesDetails( true );
+    const FileNameList &seriesUID = nameGenerator->GetSeriesUIDs();
+    int nSeries = seriesUID.size();
+    
+    std::vector<ImageType::Pointer> dicoms = std::vector<ImageType::Pointer>();
+    
+    FileNameList::const_iterator seriesItr = seriesUID.begin();
+    FileNameList::const_iterator seriesEnd = seriesUID.end();
+    
+    int i;
+    for(i=0; seriesItr!=seriesEnd;i++, seriesItr++){
+        std::string seriesIdentifier = seriesItr->c_str();
+        FileNameList fileNames = nameGenerator->GetFileNames( seriesIdentifier );
+        
+        ReaderType::Pointer reader = ReaderType::New();
+        ImageIOType::Pointer dicomIO = ImageIOType::New();
+        reader->SetImageIO( dicomIO );
+        
+        // read image from list of filenames as an itk Image object
+        // convert itk image to a vtkImageData object with connector
+        reader->SetFileNames( fileNames );
+        
+        try {
+            reader->Update();
+        } catch (itk::ExceptionObject &ex)
+        {
+            std::cout << ex << std::endl;
+            break;
+        }
+        
+        dicoms.push_back(reader->GetOutput());
+    }
+    return dicoms;
+}

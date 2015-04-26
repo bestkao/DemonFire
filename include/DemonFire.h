@@ -1,6 +1,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+// unix headers
 #include <unistd.h>
+#include <dirent.h>
+#include <ftw.h>
 
 #include <algorithm>
 // some standard vtk headers
@@ -88,5 +91,5 @@ class Utility{
 public:
     static ImageType::Pointer loadDICOM(char*);
     static int saveDICOM(ImageType::Pointer, char*);
-    static ImageType::Pointer* loadDICOMs(char*);
+    static std::vector<ImageType::Pointer> loadDICOMs(char* folder);
 };

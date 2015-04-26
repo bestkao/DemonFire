@@ -39,6 +39,12 @@
 #include <vtkImageSlice.h>
 #include <vtkCommand.h>
 
+// itk image filters
+#include <itkStatisticsImageFilter.h>
+#include <itkIntensityWindowingImageFilter.h>
+#include <itkAddImageFilter.h>
+#include <itkBinaryThresholdImageFilter.h>
+
 // reading/writing DICOM in itk
 #include <itkGDCMImageIO.h>
 #include <itkGDCMSeriesFileNames.h>
@@ -80,11 +86,24 @@ public:
 class ImageProcessing{
 public:
     static ImageType::Pointer doPreProcessing(ImageType::Pointer);
-    static ImageType::Pointer smoothImage(ImageType::Pointer);
-    static ImageType::Pointer sharpenImage(ImageType::Pointer);
-    static ImageType::Pointer applyMask(ImageType::Pointer, ImageType::Pointer);
-    static ImageType::Pointer closeImage(ImageType::Pointer);
-    static ImageType::Pointer shrinkImage(int factor);
+    
+    // basic filters
+    static ImageType::Pointer doSmooth(ImageType::Pointer);
+    static void doSmooth(ImageType::Pointer*);
+    static ImageType::Pointer doSharpen(ImageType::Pointer);
+    static void doSharpen(ImageType::Pointer*);
+    static ImageType::Pointer doIntensityWindowing(ImageType::Pointer input);
+    static void doIntensityWindowing(ImageType::Pointer*);
+    static ImageType::Pointer doBinaryThresholding(ImageType::Pointer, int);
+    static void doBinaryThresholding(ImageType::Pointer*, int);
+    static ImageType::Pointer doMask(ImageType::Pointer, ImageType::Pointer);
+    static void doMask(ImageType::Pointer *input, ImageType::Pointer);
+    
+    // basic operations
+    static ImageType::Pointer doClosing(ImageType::Pointer);
+    static void doClosing(ImageType::Pointer *input);
+    static ImageType::Pointer doShrink(ImageType::Pointer, int);
+    static void doShrink(ImageType::Pointer *input, int);
 };
 
 class Utility{

@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <limits.h>
 // unix headers
 #include <unistd.h>
 #include <dirent.h>
@@ -20,6 +21,8 @@
 #include <vtkActor2D.h>
 #include <vtkTextProperty.h>
 #include <vtkTextMapper.h>
+#include <vtkSmartVolumeMapper.h>
+
 // needed to easily convert int to std::string
 #include <sstream>
 
@@ -44,6 +47,13 @@
 #include <itkIntensityWindowingImageFilter.h>
 #include <itkAddImageFilter.h>
 #include <itkBinaryThresholdImageFilter.h>
+#include <itkShiftScaleImageFilter.h>
+#include <itkCastImageFilter.h>
+#include "itkAdaptiveHistogramEqualizationImageFilter.h"
+#include <itkRescaleIntensityImageFilter.h>
+#include "itkOtsuThresholdImageFilter.h"
+#include <itkMaskImageFilter.h>
+#include <itkDiscreteGaussianImageFilter.h>
 
 // reading/writing DICOM in itk
 #include <itkGDCMImageIO.h>
@@ -58,7 +68,7 @@
 #include <itkMeanSquaresImageToImageMetricv4.h>
 #include <itkRegularStepGradientDescentOptimizerv4.h>
 
-#include "itkCommand.h"
+#include <itkCommand.h>
 
 typedef short PixelType;
 const unsigned int Dimension = 3;
@@ -80,16 +90,23 @@ namespace fire {
     ImageType::Pointer doSegmentation(ImageType::Pointer);
     
     // basic image filters
-    ImageType::Pointer doSmooth(ImageType::Pointer);
-    void doSmooth(ImageType::Pointer*);
-    ImageType::Pointer doSharpen(ImageType::Pointer);
-    void doSharpen(ImageType::Pointer*);
+    ImageType::Pointer doSmoothing(ImageType::Pointer);
+    void doSmoothing(ImageType::Pointer*);
+    ImageType::Pointer doSharpening(ImageType::Pointer);
+    void doSharpening(ImageType::Pointer*);
     ImageType::Pointer doIntensityWindowing(ImageType::Pointer input);
     void doIntensityWindowing(ImageType::Pointer*);
     ImageType::Pointer doBinaryThresholding(ImageType::Pointer, int);
     void doBinaryThresholding(ImageType::Pointer*, int);
-    ImageType::Pointer doMask(ImageType::Pointer, ImageType::Pointer);
+    ImageType::Pointer doMasking(ImageType::Pointer, ImageType::Pointer);
     void doMask(ImageType::Pointer *input, ImageType::Pointer);
+    ImageType::Pointer doHistogramEqualization(ImageType::Pointer);
+    void doHistogramEqualization(ImageType::Pointer*);
+    ImageType::Pointer doIntensityRescaling(ImageType::Pointer);
+    void doIntensityRescaling(ImageType::Pointer*);
+    
+    ImageType::Pointer doOtsuThresholding(ImageType::Pointer);
+    void doOtsuThresholding(ImageType::Pointer*);
     
     // basic image operations
     ImageType::Pointer doClosing(ImageType::Pointer);

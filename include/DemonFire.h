@@ -118,3 +118,31 @@ namespace fire {
     int saveDICOM(ImageType::Pointer, char*);
     std::vector<ImageType::Pointer> loadDICOMs(char* folder);
 }
+
+class cineView
+{
+public:
+    // option axis parameter slices on x or y axis
+    cineView(vtkImageData *data, int axis);
+    void SetMapper(vtkImageSliceMapper *mapper);
+    vtkSmartPointer<vtkRenderer> getRenderer();
+    void addAnimationObserver(vtkSmartPointer<vtkRenderWindowInteractor> interactor);
+
+    class vtkAnimation : public vtkCommand
+    {
+    public:
+        static vtkAnimation *New();
+        virtual void Execute(vtkObject *caller, unsigned long eventId, void * vtkNotUsed(callData));
+        virtual void SetMapper(vtkImageSliceMapper *mapper);
+        int slice, max, min, delta;
+        vtkImageSliceMapper* mapper;
+    };
+int slice, max, min, delta;
+
+private:
+    vtkImageData *data;
+    vtkSmartPointer<vtkRenderer> renderer;
+    vtkSmartPointer<vtkImageSliceMapper> mapper;
+    vtkSmartPointer<vtkImageSlice> imageSlice;
+
+};

@@ -67,6 +67,7 @@
 #include <itkTranslationTransform.h>
 #include <itkMeanSquaresImageToImageMetricv4.h>
 #include <itkRegularStepGradientDescentOptimizerv4.h>
+#include <itkConnectedThresholdImageFilter.h>
 
 #include <itkCommand.h>
 

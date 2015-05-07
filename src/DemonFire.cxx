@@ -14,7 +14,12 @@ int main(int argc, char **argv){
     image[1] = doSmoothing(image[0]);
     image[2] = image[0];
 
-    //doSegmentation(image);
+    //doSegmentation works sort of with SegmentationImageSeries (in segmentaion file in drive)
+    //Because the seed is currently hardcoded, it only works with specific series
+    //int xSeed = 217;
+    //int ySeed = 224;
+    //int zSeed = 1;
+    //image[1] = doSegmentation(image[1], xSeed, ySeed, zSeed);
     //doRegistration(image, image);
 
     ConnectorType::Pointer connector[] = {

@@ -87,7 +87,7 @@ namespace fire {
     // process
     ImageType::Pointer doPreProcessing(ImageType::Pointer);
     TransformType::ConstPointer doRegistration(ImageType::Pointer, ImageType::Pointer);
-    ImageType::Pointer doSegmentation(ImageType::Pointer);
+    ImageType::Pointer doSegmentation(ImageType::Pointer, int xSeed, int ySeed, int zSeed);
     
     // basic image filters
     ImageType::Pointer doSmoothing(ImageType::Pointer);

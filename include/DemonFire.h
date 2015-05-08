@@ -67,6 +67,7 @@
 #include <itkTranslationTransform.h>
 #include <itkMeanSquaresImageToImageMetricv4.h>
 #include <itkRegularStepGradientDescentOptimizerv4.h>
+#include <itkConnectedThresholdImageFilter.h>
 
 #include <itkCommand.h>
 
@@ -87,7 +88,7 @@ namespace fire {
     // process
     ImageType::Pointer doPreProcessing(ImageType::Pointer);
     TransformType::ConstPointer doRegistration(ImageType::Pointer, ImageType::Pointer);
-    ImageType::Pointer doSegmentation(ImageType::Pointer);
+    ImageType::Pointer doSegmentation(ImageType::Pointer, int xSeed, int ySeed, int zSeed);
     
     // basic image filters
     ImageType::Pointer doSmoothing(ImageType::Pointer);

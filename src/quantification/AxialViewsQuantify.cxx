@@ -90,7 +90,7 @@ public:
     {
         Execute( (const itk::Object *)caller, event);
     }
-    
+
     void Execute(const itk::Object * object, const itk::EventObject & event)
     {
         OptimizerPointer optimizer =
@@ -115,7 +115,7 @@ public:
         cb->slice = 0;
         return cb;
     }
-    
+
     virtual void Execute(vtkObject *caller, unsigned long eventId,
                          void * vtkNotUsed(callData))
     {
@@ -123,7 +123,7 @@ public:
         {
             ++this->slice;
         }
-        
+
         if(this->slice > this->max){
             this->slice = min;
         }
@@ -131,14 +131,14 @@ public:
         vtkRenderWindowInteractor *iren = vtkRenderWindowInteractor::SafeDownCast(caller);
         iren->GetRenderWindow()->Render();
     }
-    
+
     virtual void SetMapper(vtkImageSliceMapper *mapper){
         this->mapper = mapper;
         this->min = mapper->GetSliceNumberMinValue();
         this->max = mapper->GetSliceNumberMaxValue();
         this->slice = this->min;
     }
-    
+
 private:
     int slice, max, min;
 public:
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
     typedef itk::GDCMImageIO ImageIOType;
     typedef itk::GDCMSeriesFileNames NamesGeneratorType;
     typedef std::vector< std::string > FileNameList;
-    
+
     // need to define the component types needed for registration
     // types of input images
 	typedef itk::Image<PixelType, Dimension> FixedImageType; // fixed image is the base image
@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
 
 	// optimizer explores the parameter space of the transform in search of optimal values of the metric
 	// type of optimizer
-	typedef itk::RegularStepGradientDescentOptimizerv4<double> OptimizerType; 
+	typedef itk::RegularStepGradientDescentOptimizerv4<double> OptimizerType;
 
 	// metric compares how well the two images match each other
 	// type of metric
@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
 	// the registration method is responsible for interconnecting all of the components
 	// type of registration method
 	typedef itk::ImageRegistrationMethodv4<FixedImageType, MovingImageType, TransformType> RegistrationType;
-    
+
    /*// Verify input arguments
    if ( argc != 2 )
    {
@@ -186,46 +186,46 @@ int main(int argc, char* argv[])
       << " FolderName" << std::endl;
       return EXIT_FAILURE;
    }*/
-   
+
 	// need two arguments, 1 for each folder
 	if (argc != 3) {
 		std::cout << "Usage: " << argv[0]
-		<< " FixedFolderName" 
-		<< " MovingFolderName" << std::endl; 
+		<< " FixedFolderName"
+		<< " MovingFolderName" << std::endl;
 		return EXIT_FAILURE;
 	}
 
     // pull path from command line args for now
 	std::string folder = argv[1];
 	std::string folder2 = argv[2];
-    
+
     ReaderType::Pointer reader = ReaderType::New();
     ConnectorType::Pointer connector = ConnectorType::New();
-    
+
     // need another reader for Moving Image
     ReaderType::Pointer reader2 = ReaderType::New();
-    
+
     // read data in as DICOM image using GDCMImageIO class
     ImageIOType::Pointer dicomIO = ImageIOType::New();
     reader->SetImageIO( dicomIO );
-    
+
     // same for second image series
     ImageIOType::Pointer dicomIO2 = ImageIOType::New();
     reader2->SetImageIO(dicomIO2);
-    
+
     // generate file names for DICOM image
     NamesGeneratorType::Pointer nameGenerator = NamesGeneratorType::New();
     nameGenerator->SetDirectory(folder);
     nameGenerator->SetUseSeriesDetails( true );
     //nameGenerator->AddSeriesRestriction("0008|0021" );    // filter by additional requirements
     const FileNameList & seriesUID = nameGenerator->GetSeriesUIDs();
-    
+
     // same for second image series
     NamesGeneratorType::Pointer nameGenerator2 = NamesGeneratorType::New();
     nameGenerator2->SetDirectory(folder2);
     nameGenerator2->SetUseSeriesDetails(true);
     const FileNameList &seriesUID2 = nameGenerator2->GetSeriesUIDs();
-    
+
     // print out series information to help with debugging
     FileNameList::const_iterator seriesItr = seriesUID.begin();
     FileNameList::const_iterator seriesEnd = seriesUID.end();
@@ -235,7 +235,7 @@ int main(int argc, char* argv[])
             << nameGenerator->GetFileNames( seriesItr->c_str() ).size() << " files" << std::endl;
         ++seriesItr;
     }
-    
+
     // same for 2nd series
     FileNameList::const_iterator series2Itr = seriesUID2.begin();
     FileNameList::const_iterator series2End = seriesUID2.end();
@@ -244,22 +244,22 @@ int main(int argc, char* argv[])
 		<< nameGenerator2->GetFileNames(series2Itr->c_str()).size() << " files" << std::endl;
 		++series2Itr;
 	}
-	
+
 	std::cout << " Found both series." << std::endl;
-    
+
     // for now, visualize the first series found in the input folder
     std::string seriesIdentifier = seriesUID.begin()->c_str();
     FileNameList fileNames = nameGenerator->GetFileNames( seriesIdentifier );
-    
+
     // same for second series
     std::string seriesIdentifier2 = seriesUID2.begin()->c_str();
     FileNameList fileNames2 = nameGenerator2->GetFileNames(seriesIdentifier2);
-    
+
 	reader->SetFileNames(fileNames);
 	reader2->SetFileNames(fileNames2);
-	
-    
-    // instantiate all of the components needed for registration and hook them up 
+
+
+    // instantiate all of the components needed for registration and hook them up
     MetricType::Pointer metric = MetricType::New();
 	OptimizerType::Pointer optimizer = OptimizerType::New();
 	RegistrationType::Pointer registration = RegistrationType::New();
@@ -282,9 +282,9 @@ int main(int argc, char* argv[])
 
 	metric->SetFixedInterpolator(fixedInterpolator);
 	metric->SetMovingInterpolator(movingInterpolator);
-	
+
 	std::cout << "Created all registration components." << std::endl;
-	
+
 	// make the image registration aquire inputs from the outputs of the readers
 	try
     {
@@ -296,16 +296,16 @@ int main(int argc, char* argv[])
         std::cout << ex << std::endl;
         return EXIT_FAILURE;
     }
-    
+
     std::cout << "Read both image series into memory." << std::endl;
-    
+
     ShrinkFilter::Pointer shrink = ShrinkFilter::New();
     shrink->SetInput(reader->GetOutput());
     shrink->SetShrinkFactors(16);
     ShrinkFilter::Pointer shrink2 = ShrinkFilter::New();
     shrink2->SetInput(reader2->GetOutput());
     shrink2->SetShrinkFactors(16);
-    
+
     shrink->Update();
     shrink2->Update();
     std::cout << "Shrunk both images." << std::endl;

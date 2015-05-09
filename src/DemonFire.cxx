@@ -19,7 +19,9 @@ int main(int argc, char **argv){
     //int xSeed = 217;
     //int ySeed = 224;
     //int zSeed = 1;
-    //image[1] = doSegmentation(image[1], xSeed, ySeed, zSeed);
+    //int lowerThreshold = 5;
+    //int upperThreshold = 80;
+    //image[1] = doSegmentation(image[1], xSeed, ySeed, zSeed, lowerThreshold, upperThreshold);
     //doRegistration(image, image);
 
     ConnectorType::Pointer connector[] = {

@@ -54,6 +54,9 @@
 #include "itkOtsuThresholdImageFilter.h"
 #include <itkMaskImageFilter.h>
 #include <itkDiscreteGaussianImageFilter.h>
+#include "itkGrayscaleErodeImageFilter.h"
+#include "itkGrayscaleDilateImageFilter.h"
+#include "itkBinaryBallStructuringElement.h"
 
 // reading/writing DICOM in itk
 #include <itkGDCMImageIO.h>
@@ -88,7 +91,7 @@ namespace fire {
     // process
     ImageType::Pointer doPreProcessing(ImageType::Pointer);
     TransformType::ConstPointer doRegistration(ImageType::Pointer, ImageType::Pointer);
-    ImageType::Pointer doSegmentation(ImageType::Pointer, int xSeed, int ySeed, int zSeed);
+    ImageType::Pointer doSegmentation(ImageType::Pointer, int xSeed, int ySeed, int zSeed, int lowerTH, int upperTH);
     
     // basic image filters
     ImageType::Pointer doSmoothing(ImageType::Pointer);
@@ -110,8 +113,14 @@ namespace fire {
     void doOtsuThresholding(ImageType::Pointer*);
     
     // basic image operations
-    ImageType::Pointer doClosing(ImageType::Pointer);
-    void doClosing(ImageType::Pointer *input);
+  ImageType::Pointer doDilation(ImageType::Pointer, int radius);
+  //void doDilation(ImageType::Pointer *input);
+  ImageType::Pointer doErosion(ImageType::Pointer, int radius);
+  //void doErosion(ImageType::Pointer *input);
+    ImageType::Pointer doClosing(ImageType::Pointer, int radius);
+    //void doClosing(ImageType::Pointer *input);
+  ImageType::Pointer doOpening(ImageType::Pointer, int radius);
+  //void doOpening(ImageType::Pointer *input);
     ImageType::Pointer doShrink(ImageType::Pointer, int);
     void doShrink(ImageType::Pointer *input, int);
     

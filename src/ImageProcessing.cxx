@@ -65,14 +65,85 @@ namespace fire {
         return;
     }
 
-    ImageType::Pointer doClosing(ImageType::Pointer input){
-        return NULL;
-    }
+  //Erosion
+  ImageType::Pointer doErosion(ImageType::Pointer input, int radius){
+    
+    typedef itk::BinaryBallStructuringElement<ImageType::PixelType, ImageType::Dimension>
+    StructuringElementType;
+    
+    StructuringElementType structuringElement;
+    structuringElement.SetRadius(radius);
+    structuringElement.CreateStructuringElement();
+    
+    typedef itk::GrayscaleErodeImageFilter <ImageType, ImageType, StructuringElementType>
+    GrayscaleErodeImageFilterType;
+    
+    GrayscaleErodeImageFilterType::Pointer erodeFilter
+    = GrayscaleErodeImageFilterType::New();
+    erodeFilter->SetInput(input);
+    erodeFilter->SetKernel(structuringElement);
+    erodeFilter->Update();
+    return erodeFilter->GetOutput();
+  }
+  
+  /*
+  void doErosion(ImageType::Pointer *input){
+    *input = doErosion(*input);
+    return;
+  }
+  */
+   
+  //Dilation
+  ImageType::Pointer doDilation(ImageType::Pointer input, int radius){
+    
+    typedef itk::BinaryBallStructuringElement<ImageType::PixelType, ImageType::Dimension>
+    StructuringElementType;
+    
+    StructuringElementType structuringElement;
+    structuringElement.SetRadius(radius);
+    structuringElement.CreateStructuringElement();
+    
+    typedef itk::GrayscaleDilateImageFilter <ImageType, ImageType, StructuringElementType>
+    GrayscaleDilateImageFilterType;
+    
+    GrayscaleDilateImageFilterType::Pointer dilateFilter
+    = GrayscaleDilateImageFilterType::New();
+    dilateFilter->SetInput(input);
+    dilateFilter->SetKernel(structuringElement);
+    dilateFilter->Update();
+    return dilateFilter->GetOutput();
+  }
+  
+  /*
+  void doDilation(ImageType::Pointer *input){
+    *input = doDilation(*input);
+    return;
+  }
+  */
 
+  //Closing(f) = Erosion(Dilation(f))
+  ImageType::Pointer doClosing(ImageType::Pointer input, int radius){
+    return doErosion(doDilation(input, radius), radius);
+  }
+  
+  /*
     void doClosing(ImageType::Pointer *input){
         *input = doClosing(*input);
         return;
     }
+   */
+  
+  //Opening(f) = Dilation(Erosion(f))
+  ImageType::Pointer doOpening(ImageType::Pointer input, int radius){
+    return doDilation(doErosion(input, radius), radius);
+  }
+  
+  /*
+  void doOpening(ImageTypep::Oointer *input){
+    *input = doOpening(*input);
+    return
+  }
+   */
     
     ImageType::Pointer doOtsuThresholding(ImageType::Pointer input){
         typedef  itk::OtsuThresholdImageFilter< ImageType , ImageType> Filter;

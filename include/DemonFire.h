@@ -71,21 +71,30 @@
 #include <itkMeanSquaresImageToImageMetricv4.h>
 #include <itkRegularStepGradientDescentOptimizerv4.h>
 #include <itkConnectedThresholdImageFilter.h>
+#include <itkAffineTransform.h>
+#include <itkMutualInformationImageToImageMetric.h>
+#include <itkAffineTransform.h>
 
 #include <itkCommand.h>
 
-typedef short PixelType;
+typedef float PixelType;
 const unsigned int Dimension = 3;
 typedef itk::Image<PixelType, Dimension> ImageType;
 typedef itk::Image<PixelType, Dimension-1> OutputImageType;
 typedef itk::ImageSeriesReader< ImageType > ReaderType;
 typedef itk::ImageSeriesWriter<ImageType, OutputImageType >  WriterType;
 typedef itk::ImageToVTKImageFilter<ImageType> ConnectorType;
-typedef itk::TranslationTransform< double, Dimension > TransformType;
 typedef itk::GDCMImageIO ImageIOType;
 typedef itk::GDCMSeriesFileNames NamesGeneratorType;
 typedef itk::NumericSeriesFileNames NumericNamesGeneratorType;
 typedef std::vector< std::string > FileNameList;
+
+// registration typedefs
+typedef itk::ShrinkImageFilter<ImageType, ImageType> ShrinkFilter;
+typedef itk::RegularStepGradientDescentOptimizerv4<double> OptimizerType;
+typedef itk::MeanSquaresImageToImageMetricv4<ImageType, ImageType> MetricType;
+typedef itk::TranslationTransform< double, Dimension > TransformType;
+typedef itk::ImageRegistrationMethodv4<ImageType, ImageType, TransformType> RegistrationType;
 
 namespace fire {
     // process

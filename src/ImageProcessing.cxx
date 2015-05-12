@@ -152,7 +152,7 @@ namespace fire {
         filter->SetInput(input);
         filter->Update();
         
-        printf("Otsu threshold is at %d\n", filter->GetThreshold());
+        printf("Otsu threshold is at %f\n", filter->GetThreshold());
         
         return filter->GetOutput();
     }

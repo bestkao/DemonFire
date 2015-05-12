@@ -74,6 +74,8 @@
 #include <itkAffineTransform.h>
 #include <itkMutualInformationImageToImageMetric.h>
 #include <itkAffineTransform.h>
+#include <itkAmoebaOptimizerv4.h>
+
 
 #include <itkCommand.h>
 
@@ -90,9 +92,11 @@ typedef itk::NumericSeriesFileNames NumericNamesGeneratorType;
 typedef std::vector< std::string > FileNameList;
 
 // registration typedefs
+typedef itk::AmoebaOptimizerv4 AmoebaOptimizerType;
+typedef itk::RegularStepGradientDescentOptimizerv4<double> GradientOptimizerType;
 typedef itk::ShrinkImageFilter<ImageType, ImageType> ShrinkFilter;
-typedef itk::RegularStepGradientDescentOptimizerv4<double> OptimizerType;
-typedef itk::MeanSquaresImageToImageMetricv4<ImageType, ImageType> MetricType;
+typedef itk::MeanSquaresImageToImageMetricv4<ImageType, ImageType> FirstPassMetricType;
+typedef itk::MattesMutualInformationImageToImageMetricv4<ImageType, ImageType> SecondPassMetricType;
 typedef itk::TranslationTransform< double, Dimension > TransformType;
 typedef itk::ImageRegistrationMethodv4<ImageType, ImageType, TransformType> RegistrationType;
 

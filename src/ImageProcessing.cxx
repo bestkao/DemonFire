@@ -68,7 +68,7 @@ namespace fire {
   //Erosion
   ImageType::Pointer doErosion(ImageType::Pointer input, int radius){
     
-    typedef itk::BinaryBallStructuringElement<ImageType::PixelType, ImageType::Dimension>
+    typedef itk::BinaryBallStructuringElement<PixelType, Dimension>
     StructuringElementType;
     
     StructuringElementType structuringElement;
@@ -96,7 +96,7 @@ namespace fire {
   //Dilation
   ImageType::Pointer doDilation(ImageType::Pointer input, int radius){
     
-    typedef itk::BinaryBallStructuringElement<ImageType::PixelType, ImageType::Dimension>
+    typedef itk::BinaryBallStructuringElement<PixelType, Dimension>
     StructuringElementType;
     
     StructuringElementType structuringElement;

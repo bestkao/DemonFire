@@ -1,6 +1,56 @@
 #include "DemonFire.h"
 #include "CineView.cxx"
+#include "vtkAbstractPicker.h"
+#include "vtkRendererCollection.h"
+#include "itkIndex.h"
 using namespace fire;
+
+// Define interaction style
+class MouseInteractorStyle4 : public vtkInteractorStyleTrackballCamera
+{
+  public:
+    static MouseInteractorStyle4* New();
+    vtkTypeMacro(MouseInteractorStyle4, vtkInteractorStyleTrackballCamera);
+ 
+    virtual void OnLeftButtonDown() 
+    {
+      this->Interactor->GetPicker()->Pick(this->Interactor->GetEventPosition()[0], 
+                         this->Interactor->GetEventPosition()[1], 
+                         0,  // always zero.
+                         this->Interactor->GetRenderWindow()->GetRenderers()->GetFirstRenderer());
+      double picked[3];
+      this->Interactor->GetPicker()->GetPickPosition(picked);
+      std::cout << "Picked value: " << picked[0] << " " << picked[1] << " " << picked[2] << std::endl;
+      itk::Index<3> index;
+      index[0] = picked[0]; index[1]=picked[1]; index[2]=picked[2];
+      
+      connector->SetInput(doSegmentation(display, picked[0], picked[1], picked[2], -1500, 3000));
+      connector->Update();
+      // Forward events
+      vtkInteractorStyleTrackballCamera::OnLeftButtonDown();
+    }
+ 
+    virtual void OnMiddleButtonDown() 
+    {
+      std::cout << "Pressed middle mouse button." << std::endl;
+      // Forward events
+      vtkInteractorStyleTrackballCamera::OnMiddleButtonDown();
+    }
+ 
+    virtual void OnRightButtonDown() 
+    {
+      std::cout << "Pressed right mouse button." << std::endl;
+      // Forward events
+      vtkInteractorStyleTrackballCamera::OnRightButtonDown();
+    }
+    
+  public:
+  ImageType::Pointer display;
+  ConnectorType::Pointer connector;
+ 
+};
+
+vtkStandardNewMacro(MouseInteractorStyle4);
 
 int main(int argc, char **argv){
     if(argc<3){
@@ -36,7 +86,7 @@ int main(int argc, char **argv){
     resampler->SetOutputOrigin(image[0]->GetOrigin());
     resampler->SetOutputSpacing(image[0]->GetSpacing());
     resampler->SetOutputDirection(image[0]->GetDirection());
-    resampler->SetDefaultPixelValue(50);
+    resampler->SetDefaultPixelValue(0);
 
     ConnectorType::Pointer connector[] = {
                             ConnectorType::New(),
@@ -61,9 +111,12 @@ int main(int argc, char **argv){
     // Setup render window interactor (defines how user interacts with visualization)
     vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
     vtkSmartPointer<vtkRenderWindowInteractor>::New();
-    vtkSmartPointer<vtkInteractorStyleImage> interactorStyle =
-    vtkSmartPointer<vtkInteractorStyleImage>::New();
-    renderWindowInteractor->SetInteractorStyle(interactorStyle);
+    
+    vtkSmartPointer<MouseInteractorStyle4> style =
+        vtkSmartPointer<MouseInteractorStyle4>::New();
+    style->display = image[0];
+    style->connector = connector[0];
+    renderWindowInteractor->SetInteractorStyle( style );
     renderWindowInteractor->SetRenderWindow(renderWindow);
 
     // Define viewport ranges

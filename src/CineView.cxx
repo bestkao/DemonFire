@@ -20,7 +20,6 @@
 // option axis parameter slices on x or y axis
 cineView::cineView(vtkImageData *data, int axis = 2)
 {
-printf("create cineview\n");
 this->data = data;
 
 this->mapper = vtkSmartPointer<vtkImageSliceMapper>::New();

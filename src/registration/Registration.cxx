@@ -25,6 +25,8 @@ public:
         {
             return;
         }
+        
+
         std::cout << optimizer->GetCurrentIteration() << " = ";
         std::cout << optimizer->GetValue() << " : ";
         std::cout << optimizer->GetCurrentPosition() << std::endl;
@@ -36,13 +38,25 @@ namespace fire {
     // and performs registration on them. Returns a transform for the moving image
     TransformType::ConstPointer doRegistration(ImageType::Pointer fixed, ImageType::Pointer moving){
 
-	MetricType::Pointer metric = MetricType::New();
-	OptimizerType::Pointer optimizer = OptimizerType::New();
-    TransformType::Pointer      transform     = TransformType::New();
+	FirstPassMetricType::Pointer metric1 = FirstPassMetricType::New();
+	SecondPassMetricType::Pointer metric2 = SecondPassMetricType::New();
+	AmoebaOptimizerType::Pointer amoebaoptimizer = AmoebaOptimizerType::New();
+	GradientOptimizerType::Pointer gradientoptimizer = GradientOptimizerType::New();
     RegistrationType::Pointer   registration  = RegistrationType::New();
-	
-	registration->SetOptimizer(optimizer);
-	registration->SetMetric(metric);
+    
+    amoebaoptimizer->OptimizeWithRestartsOn();
+
+    gradientoptimizer->SetLearningRate(4);
+	gradientoptimizer->SetMinimumStepLength(0.001);
+	gradientoptimizer->SetRelaxationFactor(0.5);
+	gradientoptimizer->SetNumberOfIterations(200);
+	gradientoptimizer->AddObserver( itk::IterationEvent(), CommandIterationUpdate::New() );
+
+    
+	// gradient is faster but more memory intensive
+	registration->SetOptimizer(gradientoptimizer);
+	registration->SetMetric(metric1);
+
   
 	registration->SetFixedImage(fixed);
 	registration->SetMovingImage(moving);
@@ -50,41 +64,57 @@ namespace fire {
 	// initialize transform
 	TransformType::Pointer identityTransform = TransformType::New();
 	identityTransform->SetIdentity();
+	
     registration->SetMovingInitialTransform(identityTransform);
 	registration->SetFixedInitialTransform(identityTransform);
 	
-	// optimizer settings
-    optimizer->SetLearningRate(4);
-	optimizer->SetMinimumStepLength(0.001);
-	optimizer->SetRelaxationFactor(0.5);
-	optimizer->SetNumberOfIterations(200);
-	optimizer->AddObserver( itk::IterationEvent(), CommandIterationUpdate::New() );
-	
-    const unsigned int numberOfLevels = 1;
     RegistrationType::ShrinkFactorsArrayType shrinkFactorsPerLevel;
-    shrinkFactorsPerLevel.SetSize( 3 );
-    shrinkFactorsPerLevel[0] = 4;
-    shrinkFactorsPerLevel[1] = 2;
-    shrinkFactorsPerLevel[2] = 1;
+    shrinkFactorsPerLevel.SetSize( 1 );
+    shrinkFactorsPerLevel[0] = 64;
+    shrinkFactorsPerLevel[1] = 32;
+    shrinkFactorsPerLevel[2] = 16;
     RegistrationType::SmoothingSigmasArrayType smoothingSigmasPerLevel;
     smoothingSigmasPerLevel.SetSize( 3 );
     smoothingSigmasPerLevel[0] = 0;
     smoothingSigmasPerLevel[1] = 0;
     smoothingSigmasPerLevel[2] = 0;
-    registration->SetNumberOfLevels ( numberOfLevels );
+    registration->SetNumberOfLevels ( 1 );
+
+    registration->SetShrinkFactorsPerLevel( shrinkFactorsPerLevel );
+    registration->SetSmoothingSigmasPerLevel( smoothingSigmasPerLevel );
     registration->SetShrinkFactorsPerLevel( shrinkFactorsPerLevel );
     registration->SetSmoothingSigmasPerLevel( smoothingSigmasPerLevel );
     
     registration->SetMetricSamplingStrategy( RegistrationType::RANDOM );
     registration->SetMetricSamplingPercentage(.20);
     
-    // do the actual registration
+       // do the actual registration
+    registration->Update();
+    
+    /*
+    std::cout << "First pass registration finished with following results:" << std::endl;
+    std::cout << gradientoptimizer->GetCurrentIteration() << " = ";
+    std::cout << gradientoptimizer->GetValue() << " : ";
+    std::cout << gradientoptimizer->GetCurrentPosition() << std::endl;
+    
+    TransformType::ConstPointer transform = registration->GetTransform();
+    
+    // second round using mutual information
+    registration  = RegistrationType::New();
+    registration->SetFixedImage(fixed);
+	registration->SetMovingImage(moving);
+    registration->SetOptimizer(amoebaoptimizer);
+	registration->SetMetric(metric2);
+    registration->SetNumberOfLevels ( 1 );
+    registration->SetMetricSamplingStrategy( RegistrationType::RANDOM );
+    registration->SetMetricSamplingPercentage(.20);
+    
+    registration->SetMovingInitialTransform(transform);
+	registration->SetFixedInitialTransform(identityTransform);
     registration->Update();
     
     std::cout << "Registration finished with following results:" << std::endl;
-    std::cout << optimizer->GetCurrentIteration() << " = ";
-    std::cout << optimizer->GetValue() << " : ";
-    std::cout << optimizer->GetCurrentPosition() << std::endl;
+    amoebaoptimizer->Print(std::cout); */
 	
 	return registration->GetTransform();
     }

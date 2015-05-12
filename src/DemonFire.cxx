@@ -75,7 +75,7 @@ int main(int argc, char **argv){
     
     
     printf("Performing registration\n");
-    TransformType::ConstPointer transform = doRegistration(image[0], image[1]);
+    TransformType::Pointer transform = doRegistration(image[0], image[1]);
 
     typedef itk::ResampleImageFilter<ImageType, ImageType> ResampleFilterType;
     ResampleFilterType::Pointer resampler = ResampleFilterType::New();

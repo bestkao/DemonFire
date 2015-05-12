@@ -64,17 +64,21 @@
 #include <itkNumericSeriesFileNames.h>
 #include <itkImageSeriesReader.h>
 #include <itkImageSeriesWriter.h>
+#include <itkMattesMutualInformationImageToImageMetric.h>
+#include <itkMultiResolutionImageRegistrationMethod.h>
+#include <itkMultiResolutionPyramidImageFilter.h>
 
 // needed for basic image registration
-#include <itkImageRegistrationMethodv4.h>
-#include <itkTranslationTransform.h>
-#include <itkMeanSquaresImageToImageMetricv4.h>
-#include <itkRegularStepGradientDescentOptimizerv4.h>
+#include <itkImageRegistrationMethod.h>
+#include <itkMeanSquaresImageToImageMetric.h>
 #include <itkConnectedThresholdImageFilter.h>
 #include <itkAffineTransform.h>
-#include <itkMutualInformationImageToImageMetric.h>
-#include <itkAffineTransform.h>
-#include <itkAmoebaOptimizerv4.h>
+#include <itkAmoebaOptimizer.h>
+#include "itkMultiResolutionImageRegistrationMethod.h"
+#include "itkTranslationTransform.h"
+#include "itkMattesMutualInformationImageToImageMetric.h"
+#include "itkRegularStepGradientDescentOptimizer.h"
+#include "itkCheckerBoardImageFilter.h"
 
 
 #include <itkCommand.h>
@@ -92,18 +96,29 @@ typedef itk::NumericSeriesFileNames NumericNamesGeneratorType;
 typedef std::vector< std::string > FileNameList;
 
 // registration typedefs
-typedef itk::AmoebaOptimizerv4 AmoebaOptimizerType;
-typedef itk::RegularStepGradientDescentOptimizerv4<double> GradientOptimizerType;
-typedef itk::ShrinkImageFilter<ImageType, ImageType> ShrinkFilter;
-typedef itk::MeanSquaresImageToImageMetricv4<ImageType, ImageType> FirstPassMetricType;
-typedef itk::MattesMutualInformationImageToImageMetricv4<ImageType, ImageType> SecondPassMetricType;
-typedef itk::TranslationTransform< double, Dimension > TransformType;
-typedef itk::ImageRegistrationMethodv4<ImageType, ImageType, TransformType> RegistrationType;
+  typedef itk::TranslationTransform< double, Dimension > TransformType;
+  typedef itk::RegularStepGradientDescentOptimizer       OptimizerType;
+  typedef itk::LinearInterpolateImageFunction<
+                                    ImageType,
+                                    double             > InterpolatorType;
+  typedef itk::MattesMutualInformationImageToImageMetric<
+                                    ImageType,
+                                    ImageType >   MetricType;
+  typedef itk::MultiResolutionImageRegistrationMethod<
+                                    ImageType,
+                                    ImageType >   RegistrationType;
+  typedef itk::MultiResolutionPyramidImageFilter<
+                                    ImageType,
+                                    ImageType >   FixedImagePyramidType;
+  typedef itk::MultiResolutionPyramidImageFilter<
+                                    ImageType,
+                                    ImageType >   MovingImagePyramidType;
+                                   
 
 namespace fire {
     // process
     ImageType::Pointer doPreProcessing(ImageType::Pointer);
-    TransformType::ConstPointer doRegistration(ImageType::Pointer, ImageType::Pointer);
+    TransformType::Pointer doRegistration(ImageType::Pointer, ImageType::Pointer);
     ImageType::Pointer doSegmentation(ImageType::Pointer, int xSeed, int ySeed, int zSeed, int lowerTH, int upperTH);
     
     // basic image filters

@@ -17,8 +17,8 @@ include_directories("../include/")
 add_library(DemonFireCore
 Utility.cxx
 ImageProcessing.cxx
-registration/Registration.cxx
-segmentation/Segmentation.cxx)
+Registration.cxx
+Segmentation.cxx)
 
 # set properties for build targets
 # if you get 'undefined symbol' errors trying explicitly including:

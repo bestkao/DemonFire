@@ -61,6 +61,11 @@
 #include <itkSubtractImageFilter.h>
 #include <itkAbsoluteValueDifferenceImageFilter.h>
 #include <itkNormalizeImageFilter.h>
+#include "itkLabelToRGBImageFilter.h"
+#include "itkRelabelComponentImageFilter.h"
+#include "itkLabelStatisticsImageFilter.h"
+#include "itkConnectedComponentImageFilter.h"
+#include "itkCurvatureFlowImageFilter.h"
 
 // reading/writing DICOM in itk
 #include <itkGDCMImageIO.h>
@@ -97,6 +102,14 @@ typedef itk::CheckerBoardImageFilter< ImageType > CheckerBoardFilterType;
 typedef itk::SubtractImageFilter <ImageType, ImageType > SubtractImageFilterType;
 typedef itk::AbsoluteValueDifferenceImageFilter <ImageType, ImageType, ImageType> AbsoluteValueFilterType;
 typedef itk::NormalizeImageFilter <ImageType, ImageType> NormalizeFilterType;
+
+//segmentation/quantification typedefs
+typedef itk::RGBPixel<float> RGBPixelType;
+typedef itk::Image<RGBPixelType, Dimension> RGBImageType;
+typedef itk::CurvatureFlowImageFilter<ImageType, ImageType > CurvatureFlowImageFilterType;
+typedef itk::Image<unsigned short, Dimension> CCImageType;
+typedef itk::ConnectedComponentImageFilter<ImageType, CCImageType> ConnectedComponentImageFilterType;
+typedef itk::LabelToRGBImageFilter<CCImageType, RGBImageType> RGBFilterType;
 
 // registration typedefs
 typedef itk::ShrinkImageFilter<ImageType, ImageType> ShrinkFilter;

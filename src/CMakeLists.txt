@@ -24,4 +24,6 @@ segmentation/Segmentation.cxx)
 # if you get 'undefined symbol' errors trying explicitly including:
 # vtkRenderingOpenGL vtkRenderingVolumeOpenGL vtkInteractionStyle (possibly others)
 add_executable(DemonFire DemonFire.cxx)
+add_executable(SegmentationDemo SegmentationDemo.cxx)
 target_link_libraries(DemonFire DemonFireCore ${VTK_LIBRARIES} ${ITK_LIBRARIES})
+target_link_libraries(SegmentationDemo DemonFireCore ${VTK_LIBRARIES} ${ITK_LIBRARIES})

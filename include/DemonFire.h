@@ -57,6 +57,11 @@
 #include "itkGrayscaleErodeImageFilter.h"
 #include "itkGrayscaleDilateImageFilter.h"
 #include "itkBinaryBallStructuringElement.h"
+#include "itkLabelToRGBImageFilter.h"
+#include "itkRelabelComponentImageFilter.h"
+#include "itkLabelStatisticsImageFilter.h"
+#include "itkConnectedComponentImageFilter.h"
+#include "itkCurvatureFlowImageFilter.h"
 
 // reading/writing DICOM in itk
 #include <itkGDCMImageIO.h>
@@ -94,6 +99,14 @@ typedef itk::GDCMImageIO ImageIOType;
 typedef itk::GDCMSeriesFileNames NamesGeneratorType;
 typedef itk::NumericSeriesFileNames NumericNamesGeneratorType;
 typedef std::vector< std::string > FileNameList;
+
+//segmentation/quantification typedefs
+typedef itk::RGBPixel<float> RGBPixelType;
+typedef itk::Image<RGBPixelType, Dimension> RGBImageType;
+typedef itk::CurvatureFlowImageFilter<ImageType, ImageType > CurvatureFlowImageFilterType;
+typedef itk::Image<unsigned short, Dimension> CCImageType;
+typedef itk::ConnectedComponentImageFilter<ImageType, CCImageType> ConnectedComponentImageFilterType;
+typedef itk::LabelToRGBImageFilter<CCImageType, RGBImageType> RGBFilterType;
 
 // registration typedefs
   typedef itk::TranslationTransform< double, Dimension > TransformType;

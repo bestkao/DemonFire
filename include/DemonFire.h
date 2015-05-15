@@ -57,6 +57,10 @@
 #include "itkGrayscaleErodeImageFilter.h"
 #include "itkGrayscaleDilateImageFilter.h"
 #include "itkBinaryBallStructuringElement.h"
+#include <itkCheckerBoardImageFilter.h>
+#include <itkSubtractImageFilter.h>
+#include <itkAbsoluteValueDifferenceImageFilter.h>
+#include <itkNormalizeImageFilter.h>
 #include "itkLabelToRGBImageFilter.h"
 #include "itkRelabelComponentImageFilter.h"
 #include "itkLabelStatisticsImageFilter.h"
@@ -69,22 +73,17 @@
 #include <itkNumericSeriesFileNames.h>
 #include <itkImageSeriesReader.h>
 #include <itkImageSeriesWriter.h>
-#include <itkMattesMutualInformationImageToImageMetric.h>
-#include <itkMultiResolutionImageRegistrationMethod.h>
-#include <itkMultiResolutionPyramidImageFilter.h>
 
 // needed for basic image registration
-#include <itkImageRegistrationMethod.h>
-#include <itkMeanSquaresImageToImageMetric.h>
+#include <itkImageRegistrationMethodv4.h>
+#include <itkTranslationTransform.h>
+#include <itkMeanSquaresImageToImageMetricv4.h>
+#include <itkRegularStepGradientDescentOptimizerv4.h>
 #include <itkConnectedThresholdImageFilter.h>
 #include <itkAffineTransform.h>
-#include <itkAmoebaOptimizer.h>
-#include "itkMultiResolutionImageRegistrationMethod.h"
-#include "itkTranslationTransform.h"
-#include "itkMattesMutualInformationImageToImageMetric.h"
-#include "itkRegularStepGradientDescentOptimizer.h"
-#include "itkCheckerBoardImageFilter.h"
-
+#include <itkMattesMutualInformationImageToImageMetricv4.h>
+#include <itkAffineTransform.h>
+#include <itkCompositeTransform.h>
 
 #include <itkCommand.h>
 
@@ -99,6 +98,10 @@ typedef itk::GDCMImageIO ImageIOType;
 typedef itk::GDCMSeriesFileNames NamesGeneratorType;
 typedef itk::NumericSeriesFileNames NumericNamesGeneratorType;
 typedef std::vector< std::string > FileNameList;
+typedef itk::CheckerBoardImageFilter< ImageType > CheckerBoardFilterType;
+typedef itk::SubtractImageFilter <ImageType, ImageType > SubtractImageFilterType;
+typedef itk::AbsoluteValueDifferenceImageFilter <ImageType, ImageType, ImageType> AbsoluteValueFilterType;
+typedef itk::NormalizeImageFilter <ImageType, ImageType> NormalizeFilterType;
 
 //segmentation/quantification typedefs
 typedef itk::RGBPixel<float> RGBPixelType;
@@ -109,29 +112,20 @@ typedef itk::ConnectedComponentImageFilter<ImageType, CCImageType> ConnectedComp
 typedef itk::LabelToRGBImageFilter<CCImageType, RGBImageType> RGBFilterType;
 
 // registration typedefs
-  typedef itk::TranslationTransform< double, Dimension > TransformType;
-  typedef itk::RegularStepGradientDescentOptimizer       OptimizerType;
-  typedef itk::LinearInterpolateImageFunction<
-                                    ImageType,
-                                    double             > InterpolatorType;
-  typedef itk::MattesMutualInformationImageToImageMetric<
-                                    ImageType,
-                                    ImageType >   MetricType;
-  typedef itk::MultiResolutionImageRegistrationMethod<
-                                    ImageType,
-                                    ImageType >   RegistrationType;
-  typedef itk::MultiResolutionPyramidImageFilter<
-                                    ImageType,
-                                    ImageType >   FixedImagePyramidType;
-  typedef itk::MultiResolutionPyramidImageFilter<
-                                    ImageType,
-                                    ImageType >   MovingImagePyramidType;
-                                   
+typedef itk::ShrinkImageFilter<ImageType, ImageType> ShrinkFilter;
+typedef itk::RegularStepGradientDescentOptimizerv4<double> OptimizerType;
+typedef itk::MeanSquaresImageToImageMetricv4<ImageType, ImageType> FirstPassMetricType;
+typedef itk::MattesMutualInformationImageToImageMetricv4<ImageType, ImageType> SecondPassMetricType;
+typedef itk::TranslationTransform< double, Dimension > TransformType;
+typedef itk::AffineTransform< double, Dimension > AffineTransformType;
+typedef itk::ImageRegistrationMethodv4<ImageType, ImageType, TransformType> RegistrationType;
+typedef itk::CompositeTransform<double, Dimension> CompositeTransformType;
+typedef itk::ResampleImageFilter<ImageType, ImageType> ResampleFilterType;
 
 namespace fire {
     // process
     ImageType::Pointer doPreProcessing(ImageType::Pointer);
-    TransformType::Pointer doRegistration(ImageType::Pointer, ImageType::Pointer);
+    TransformType::ConstPointer doRegistration(ImageType::Pointer, ImageType::Pointer);
     ImageType::Pointer doSegmentation(ImageType::Pointer, int xSeed, int ySeed, int zSeed, int lowerTH, int upperTH);
     
     // basic image filters
@@ -149,6 +143,8 @@ namespace fire {
     void doHistogramEqualization(ImageType::Pointer*);
     ImageType::Pointer doIntensityRescaling(ImageType::Pointer);
     void doIntensityRescaling(ImageType::Pointer*);
+    ImageType::Pointer doNormalizing(ImageType::Pointer);
+    void doNormalizing(ImageType::Pointer*);
     
     ImageType::Pointer doOtsuThresholding(ImageType::Pointer);
     void doOtsuThresholding(ImageType::Pointer*);

@@ -89,6 +89,7 @@ namespace fire {
     std::cout << optimizer->GetCurrentPosition() << std::endl;
     
     registration_MI->SetMetric(metric2);
+    registration_MI->SetMetricSamplingPercentage(.2);    // for performance
     // initialize with results of mean squares registration
     registration_MI->SetMovingInitialTransform(registration->GetTransform());
     

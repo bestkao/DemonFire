@@ -1,8 +1,4 @@
-//
-// This example demonstrates how to read a series of dicom images
-// and how to scroll with the mousewheel or the up/down keys
-// through all slices
-//
+// Generate a file graph.txt for a series of moving and fixed images, which contains mean sqaures metric information
 
 #include <fstream>
 #include <algorithm>

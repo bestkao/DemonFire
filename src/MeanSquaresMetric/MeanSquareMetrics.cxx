@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
     // Constants and type definitions
     //typedef signed short PixelType;
     typedef float PixelType;
-    const unsigned int Dimension = 2; // Currently working on 2 dimension
+    const unsigned int Dimension = 3; // Currently working on 3 dimension
     typedef itk::Image<PixelType, Dimension> ImageType;
     typedef itk::ImageSeriesReader< ImageType > ReaderType;
     typedef itk::ImageToVTKImageFilter<ImageType>       ConnectorType;
